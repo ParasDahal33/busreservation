@@ -1,4 +1,5 @@
 from re import I
+from types import NoneType
 from unicodedata import category
 from django.db import models
 from django.utils import timezone
@@ -45,7 +46,6 @@ class Schedule(models.Model):
     destination = models.ForeignKey(Location,on_delete=models.CASCADE, related_name='destination')
     schedule= models.DateTimeField()
     fare= models.FloatField()
-    rem_seats= models.IntegerField()
     status = models.CharField(max_length=2, choices=(('1','Active'),('2','Cancelled')), default=1)
     date_created = models.DateTimeField(default=timezone.now)
     date_updated = models.DateTimeField(auto_now=True)
@@ -55,7 +55,14 @@ class Schedule(models.Model):
 
     def count_available(self):
         booked = Booking.objects.filter(schedule=self).aggregate(Sum('seats'))['seats__sum']
-        return self.bus.seats - booked
+        return booked
+        """ return self.bus.seats - booked """
+
+    def total_seats(self):
+        return self.bus.seats
+
+  
+
 
 class Booking(models.Model):
     code = models.CharField(max_length=100)

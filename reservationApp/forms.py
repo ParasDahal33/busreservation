@@ -157,7 +157,6 @@ class SaveSchedule(forms.ModelForm):
     bus = forms.IntegerField()
     depart = forms.IntegerField()
     destination = forms.IntegerField()
-    rem_seats = forms.FloatField(min_value=0,max_value=999999)
     fare = forms.FloatField(min_value=0,max_value=999999)
     schedule = forms.CharField(max_length="250")
     status = forms.ChoiceField(choices=[('1','Active'),('2','Cancelled')])
