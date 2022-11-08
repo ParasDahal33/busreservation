@@ -61,18 +61,20 @@
               <td class="px-2 py-1 align-middle">{{ forloop.counter }}</td>
 
               <td class="px-2 py-1 align-middle text-center">
+                {% if schedule.count_available == None %}
+
                 <script>
                   //javascript code
-                                    a={{ schedule.total_seats|floatformat:0|intcomma }};//initialization of variables
-                                    b={{ schedule.count_available|floatformat:0|intcomma }};
-                                    if (b == null) {
-                                      document.write(a);
-                                    }
-                                    else
-                                    {
-                                    c=a-b;//perform sum operation
+                                    a= {{ schedule.total_seats }};//initialization of variables
+                                    document.write(a);
+                </script>
+                {% endif %}
+                <script>
+                  //javascript code
+                                    a={{ schedule.total_seats }};//initialization of variables
+                                    b={{ schedule.count_available }};
+                                    c=parseFloat(a) - parseFloat(b);//perform sum operation
                                     document.write(c);//print the result(+ is a concatenate operator)
-                                    }
                 </script>
               </td>
 

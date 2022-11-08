@@ -38,6 +38,12 @@
         value="{{  schedule.fare }}"
         disabled
       />
+      <script>
+         $(document).ready(function(){
+
+               $('body').find('#seats').attr('max', {{ schedule.total_seats }});
+        });
+      </script>
     </div>
     <div class="form-group mb-3">
       <label for="payable" class="control-label">Payable Amount</label>
@@ -112,11 +118,12 @@
     });
   });
 </script>
+
 <script>
    $(document).ready(function(){
      //javascript code
-     a={{ schedule.total_seats|floatformat:0|intcomma }};//initialization of variables
-     b={{ schedule.count_available|floatformat:0|intcomma }};
+     a={{ schedule.total_seats }};//initialization of variables
+     b={{ schedule.count_available }};
      c=a-b;//perform sum operation
          $('body').find('#seats').attr('max', c);
   });

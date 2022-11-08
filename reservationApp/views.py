@@ -1,6 +1,6 @@
 from email import message
 from unicodedata import category
-from django.shortcuts import render,redirect
+from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from btrs_django.settings import MEDIA_ROOT, MEDIA_URL
@@ -17,12 +17,14 @@ from datetime import datetime
 from django.db.models import Q
 
 context = {
-    'page_title' : 'File Management System',
+    'page_title': 'File Management System',
 }
-#login
+# login
+
+
 def login_user(request):
     logout(request)
-    resp = {"status":'failed','msg':''}
+    resp = {"status": 'failed', 'msg': ''}
     username = ''
     password = ''
     if request.POST:
@@ -33,25 +35,31 @@ def login_user(request):
         if user is not None:
             if user.is_active:
                 login(request, user)
-                resp['status']='success'
+                resp['status'] = 'success'
             else:
                 resp['msg'] = "Incorrect username or password"
         else:
             resp['msg'] = "Incorrect username or password"
-    return HttpResponse(json.dumps(resp),content_type='application/json')
+    return HttpResponse(json.dumps(resp), content_type='application/json')
 
-#Logout
+# Logout
+
+
 def logoutuser(request):
     logout(request)
     return redirect('/')
 
 # @login_required
+
+
 def home(request):
     context['page_title'] = 'Home'
     context['buses'] = Bus.objects.count()
     context['categories'] = Category.objects.count()
-    context['upcoming_trip'] = Schedule.objects.filter(status= 1, schedule__gt = datetime.today()).count()
-    return render(request, 'home.html',context)
+    context['upcoming_trip'] = Schedule.objects.filter(
+        status=1, schedule__gt=datetime.today()).count()
+    return render(request, 'home.html', context)
+
 
 def registerUser(request):
     user = request.user
@@ -65,18 +73,19 @@ def registerUser(request):
             form.save()
             username = form.cleaned_data.get('username')
             pwd = form.cleaned_data.get('password1')
-            loginUser = authenticate(username= username, password = pwd)
+            loginUser = authenticate(username=username, password=pwd)
             login(request, loginUser)
             return redirect('home-page')
         else:
             context['reg_form'] = form
 
-    return render(request,'register.html',context)
+    return render(request, 'register.html', context)
+
 
 @login_required
 def update_profile(request):
     context['page_title'] = 'Update Profile'
-    user = User.objects.get(id = request.user.id)
+    user = User.objects.get(id=request.user.id)
     if not request.method == 'POST':
         form = UpdateProfile(instance=user)
         context['form'] = form
@@ -89,18 +98,19 @@ def update_profile(request):
             return redirect("profile")
         else:
             context['form'] = form
-            
-    return render(request, 'manage_profile.html',context)
+
+    return render(request, 'manage_profile.html', context)
 
 
 @login_required
 def update_password(request):
     context['page_title'] = "Update Password"
     if request.method == 'POST':
-        form = UpdatePasswords(user = request.user, data= request.POST)
+        form = UpdatePasswords(user=request.user, data=request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request,"Your Account Password has been updated successfully")
+            messages.success(
+                request, "Your Account Password has been updated successfully")
             update_session_auth_hash(request, form.user)
             return redirect("profile")
         else:
@@ -108,15 +118,17 @@ def update_password(request):
     else:
         form = UpdatePasswords(request.POST)
         context['form'] = form
-    return render(request,'update_password.html',context)
+    return render(request, 'update_password.html', context)
 
 
 @login_required
 def profile(request):
     context['page_title'] = 'Profile'
-    return render(request, 'profile.html',context)
+    return render(request, 'profile.html', context)
 
 # schedule
+
+
 @login_required
 def schedule_mgt(request):
     context['page_title'] = "Trip Schedules"
@@ -125,9 +137,10 @@ def schedule_mgt(request):
 
     return render(request, 'schedule_mgt.html', context)
 
+
 @login_required
 def save_schedule(request):
-    resp = {'status':'failed','msg':''}
+    resp = {'status': 'failed', 'msg': ''}
     if request.method == 'POST':
         if (request.POST['id']).isnumeric():
             schedule = Schedule.objects.get(pk=request.POST['id'])
@@ -136,7 +149,7 @@ def save_schedule(request):
         if schedule is None:
             form = SaveSchedule(request.POST)
         else:
-            form = SaveSchedule(request.POST, instance= schedule)
+            form = SaveSchedule(request.POST, instance=schedule)
         if form.is_valid():
             form.save()
             messages.success(request, 'Schedule has been saved successfully.')
@@ -147,30 +160,32 @@ def save_schedule(request):
                     resp['msg'] += str(error + "<br>")
     else:
         resp['msg'] = 'No data has been sent.'
-    return HttpResponse(json.dumps(resp), content_type = 'application/json')
+    return HttpResponse(json.dumps(resp), content_type='application/json')
+
 
 @login_required
 def manage_schedule(request, pk=None):
     context['page_title'] = "Manage Schedule"
-    buses = Bus.objects.filter(status = 1).all()
-    locations = Location.objects.filter(status = 1).all()
+    buses = Bus.objects.filter(status=1).all()
+    locations = Location.objects.filter(status=1).all()
     context['buses'] = buses
     context['locations'] = locations
     if not pk is None:
-        schedule = Schedule.objects.get(id = pk)
+        schedule = Schedule.objects.get(id=pk)
         context['schedule'] = schedule
     else:
         context['schedule'] = {}
 
     return render(request, 'manage_schedule.html', context)
 
+
 @login_required
 def delete_schedule(request):
-    resp = {'status':'failed', 'msg':''}
+    resp = {'status': 'failed', 'msg': ''}
 
     if request.method == 'POST':
         try:
-            schedule = Schedule.objects.get(id = request.POST['id'])
+            schedule = Schedule.objects.get(id=request.POST['id'])
             schedule.delete()
             messages.success(request, 'Schedule has been deleted successfully')
             resp['status'] = 'success'
@@ -180,51 +195,59 @@ def delete_schedule(request):
 
     else:
         resp['msg'] = 'Schedule has failed to delete'
-    
-    return HttpResponse(json.dumps(resp), content_type="application/json")  
+
+    return HttpResponse(json.dumps(resp), content_type="application/json")
 
 
 # scheduled Trips
+@login_required
 def scheduled_trips(request):
     if not request.method == 'POST':
         context['page_title'] = "Scheduled Trips"
-        schedules = Schedule.objects.filter(status = 1, schedule__gt = datetime.now()).all()
+        schedules = Schedule.objects.filter(
+            status=1, schedule__gt=datetime.now()).all()
         context['schedules'] = schedules
         context['is_searched'] = False
         context['data'] = {}
     else:
         context['page_title'] = "Search Result | Scheduled Trips"
         context['is_searched'] = True
-        date = datetime.strptime(request.POST['date'],"%Y-%m-%d").date()
+        date = datetime.strptime(request.POST['date'], "%Y-%m-%d").date()
         year = date.strftime('%Y')
         month = date.strftime('%m')
         day = date.strftime('%d')
-        depart = Location.objects.get(id = request.POST['depart'])
-        destination = Location.objects.get(id = request.POST['destination'])
-        schedules = Schedule.objects.filter(Q(status = 1) & Q(schedule__year = year) & Q(schedule__month = month) & Q(schedule__day = day) & Q(Q(depart = depart) | Q(destination = destination ))).all()
+        depart = Location.objects.get(id=request.POST['depart'])
+        destination = Location.objects.get(id=request.POST['destination'])
+        schedules = Schedule.objects.filter(Q(status=1) & Q(schedule__year=year) & Q(schedule__month=month) & Q(
+            schedule__day=day) & Q(Q(depart=depart) | Q(destination=destination))).all()
         context['schedules'] = schedules
-        context['data'] = {'date':date,'depart':depart, 'destination': destination}
+        context['data'] = {'date': date,
+                           'depart': depart, 'destination': destination}
 
     return render(request, 'scheduled_trips.html', context)
 
+
+@login_required
 def manage_booking(request, schedPK=None, pk=None):
     context['page_title'] = "Manage Booking"
     context['schedPK'] = schedPK
     if not schedPK is None:
-        schedule = Schedule.objects.get(id = schedPK)
+        schedule = Schedule.objects.get(id=schedPK)
         context['schedule'] = schedule
     else:
         context['schedule'] = {}
     if not pk is None:
-        book = Booking.objects.get(id = pk)
+        book = Booking.objects.get(id=pk)
         context['book'] = book
     else:
         context['book'] = {}
 
     return render(request, 'manage_book.html', context)
 
+
+@login_required
 def save_booking(request):
-    resp = {'status':'failed','msg':''}
+    resp = {'status': 'failed', 'msg': ''}
     if request.method == 'POST':
         if (request.POST['id']).isnumeric():
             booking = Booking.objects.get(pk=request.POST['id'])
@@ -233,14 +256,16 @@ def save_booking(request):
         if booking is None:
             form = SaveBooking(request.POST)
         else:
-            form = SaveBooking(request.POST, instance= booking)
+            form = SaveBooking(request.POST, instance=booking)
         if form.is_valid():
             form.save()
             if booking is None:
                 booking = Booking.objects.last()
-                messages.success(request, f'Booking has been saved successfully. Your Booking Refderence Code is: <b>{booking.code}</b>', extra_tags = 'stay')
+                messages.success(
+                    request, f'Booking has been saved successfully. Your Booking Refderence Code is: <b>{booking.code}</b>', extra_tags='stay')
             else:
-                messages.success(request, f'<b>{booking.code}</b> Booking has been updated successfully.')
+                messages.success(
+                    request, f'<b>{booking.code}</b> Booking has been updated successfully.')
             resp['status'] = 'success'
         else:
             for fields in form:
@@ -249,8 +274,10 @@ def save_booking(request):
     else:
         resp['msg'] = 'No data has been sent.'
 
-    return HttpResponse(json.dumps(resp), content_type = 'application/json')
+    return HttpResponse(json.dumps(resp), content_type='application/json')
 
+
+@login_required
 def bookings(request):
     context['page_title'] = "Bookings"
     bookings = Booking.objects.all()
@@ -260,45 +287,48 @@ def bookings(request):
 
 
 @login_required
-def view_booking(request,pk=None):
+def view_booking(request, pk=None):
     if pk is None:
         messages.error(request, "Unkown Booking ID")
         return redirect('booking-page')
     else:
         context['page_title'] = 'Vieww Booking'
-        context['booking'] = Booking.objects.get(id = pk)
+        context['booking'] = Booking.objects.get(id=pk)
         return render(request, 'view_booked.html', context)
 
 
 @login_required
 def pay_booked(request):
-    resp = {'status':'failed','msg':''}
+    resp = {'status': 'failed', 'msg': ''}
     if not request.method == 'POST':
         resp['msg'] = "Unknown Booked ID"
     else:
-        booking = Booking.objects.get(id= request.POST['id'])
+        booking = Booking.objects.get(id=request.POST['id'])
         form = PayBooked(request.POST, instance=booking)
         if form.is_valid():
             form.save()
-            messages.success(request, f"<b>{booking.code}</b> has been paid successfully", extra_tags='stay')
+            messages.success(
+                request, f"<b>{booking.code}</b> has been paid successfully", extra_tags='stay')
             resp['status'] = 'success'
         else:
             for field in form:
                 for error in field.errors:
                     resp['msg'] += str(error + "<br>")
-    
-    return HttpResponse(json.dumps(resp),content_type = 'application/json')
+
+    return HttpResponse(json.dumps(resp), content_type='application/json')
+
 
 @login_required
 def delete_booking(request):
-    resp = {'status':'failed', 'msg':''}
+    resp = {'status': 'failed', 'msg': ''}
 
     if request.method == 'POST':
         try:
-            booking = Booking.objects.get(id = request.POST['id'])
+            booking = Booking.objects.get(id=request.POST['id'])
             code = booking.code
             booking.delete()
-            messages.success(request, f'[<b>{code}</b>] Booking has been deleted successfully')
+            messages.success(
+                request, f'[<b>{code}</b>] Booking has been deleted successfully')
             resp['status'] = 'success'
         except Exception as err:
             resp['msg'] = 'booking has failed to delete'
@@ -306,13 +336,14 @@ def delete_booking(request):
 
     else:
         resp['msg'] = 'booking has failed to delete'
-    
-    return HttpResponse(json.dumps(resp), content_type="application/json")  
 
+    return HttpResponse(json.dumps(resp), content_type="application/json")
+
+
+@login_required
 def find_trip(request):
     context['page_title'] = 'Find Trip Schedule'
-    context['locations'] = Location.objects.filter(status = 1).all
+    context['locations'] = Location.objects.filter(status=1).all
     today = datetime.today().strftime("%Y-%m-%d")
     context['today'] = today
     return render(request, 'find_trip.html', context)
-    
