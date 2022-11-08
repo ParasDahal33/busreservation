@@ -35,7 +35,7 @@
         class="form-control rounded-0 text-end"
         id="fare"
         type="text"
-        value="{{  schedule.fare|intcomma }}"
+        value="{{  schedule.fare }}"
         disabled
       />
     </div>
@@ -52,14 +52,6 @@
   </form>
 </div>
 <script>
-
-  $(document).ready(function(){
-     //javascript code
-     a={{ schedule.total_seats|floatformat:0|intcomma }};//initialization of variables
-     b={{ schedule.count_available|floatformat:0|intcomma }};
-     c=a-b;//perform sum operation
-         $('body').find('#seats').attr('max', c);
-  })
   $(function () {
     $("#seats").on("input change", function () {
       var fare = $("#fare").val();
@@ -118,5 +110,14 @@
         },
       });
     });
+  });
+</script>
+<script>
+   $(document).ready(function(){
+     //javascript code
+     a={{ schedule.total_seats|floatformat:0|intcomma }};//initialization of variables
+     b={{ schedule.count_available|floatformat:0|intcomma }};
+     c=a-b;//perform sum operation
+         $('body').find('#seats').attr('max', c);
   });
 </script>
