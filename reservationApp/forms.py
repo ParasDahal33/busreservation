@@ -217,10 +217,11 @@ class SaveBooking(forms.ModelForm):
     schedule = forms.CharField(max_length="250")
     name = forms.CharField(max_length="250")
     seats = forms.CharField(max_length="250")
+    user_id = forms.CharField(max_length="250")
 
     class Meta:
         model = Booking
-        fields = ('code','schedule','name','seats')
+        fields = ('code','schedule','name','seats','user_id')
 
     def clean_code(self):
         id = self.instance.id if self.instance.id else 0

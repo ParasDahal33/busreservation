@@ -70,6 +70,17 @@
               >Scheduled Trips</a
             >
           </li>
+          {% if user.id %}
+          <li class="nav-item">
+            <a
+              class="nav-link text-dark"
+              aria-current="page"
+              href="{% url 'booking-page' %}"
+            >
+              View Bookings</a
+            >
+          </li>
+          {% endif %}
         </ul>
 
         <ul class="navbar-nav d-flex flex-row">

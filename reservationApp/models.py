@@ -6,6 +6,7 @@ from django.utils import timezone
 from django.dispatch import receiver
 from more_itertools import quantify
 from django.db.models import Sum
+from datetime import date
 
 # Create your models here.
 
@@ -72,6 +73,10 @@ class Schedule(models.Model):
 
     def total_seats(self):
         return self.bus.seats
+    
+    def dateNow(self):
+        today = date.today()
+        return today
 
 
 class Booking(models.Model):
@@ -83,9 +88,11 @@ class Booking(models.Model):
         ('1', 'Pending'), ('2', 'Paid')), default=1)
     date_created = models.DateTimeField(default=timezone.now)
     date_updated = models.DateTimeField(auto_now=True)
+    user_id = models.CharField(max_length=100)
 
     def __str__(self):
         return str(self.code + ' - ' + self.name)
 
     def total_payable(self):
         return self.seats * self.schedule.fare
+    

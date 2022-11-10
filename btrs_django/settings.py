@@ -31,16 +31,17 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'django.contrib.staticfiles',
+    'adminlte3',
+    'adminlte3_theme',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
     'django.contrib.humanize',
-    'reservationApp.apps.ReservationAppConfig',
-    'adminlte3',
-    'adminlte3_theme',
+    'reservationApp.apps.ReservationAppConfig'
+   
 ]
 
 MIDDLEWARE = [

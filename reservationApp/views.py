@@ -280,7 +280,9 @@ def save_booking(request):
 @login_required
 def bookings(request):
     context['page_title'] = "Bookings"
-    bookings = Booking.objects.all()
+    current_user = request.user
+    userid = current_user.id
+    bookings = Booking.objects.filter(user_id = userid)
     context['bookings'] = bookings
 
     return render(request, 'bookings.html', context)
