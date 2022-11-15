@@ -28,5 +28,6 @@ urlpatterns = [
     path('veiw_booking/<int:pk>',views.view_booking,name='veiw-booking'),
     path('pay_booked',views.pay_booked,name='pay-booked'),
     path('delete_booking',views.delete_booking,name='delete-booking'),
+    path('automaticallyDelete',views.automaticallyDelete,name='automaticallyDelete'),
     path('find_trip',views.find_trip,name='find-trip-page'),
 ]

@@ -1,5 +1,7 @@
 {% load adminlte_helpers %} {%load static %}
 <!-- Left side column. contains the sidebar -->
+{% if user.is_superuser %}
+<!---->
 <aside
   class="main-sidebar sidebar-dark-primary elevation-4"
   style="width: 265px"
@@ -8,7 +10,7 @@
   {% block logo %}
   <a href="/" class="brand-link">
     {% block logo_text %}<span class="brand-text font-weight-light"
-      >Bus Reservation System </span
+      >Bus Booking System </span
     >{% endblock %}
   </a>
   {% endblock %}
@@ -86,3 +88,5 @@
   </div>
   <!-- /.sidebar -->
 </aside>
+<!---->
+{% endif %}

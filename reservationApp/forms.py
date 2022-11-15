@@ -74,6 +74,7 @@ class UpdatePasswords(PasswordChangeForm):
         model = User
         fields = ('old_password','new_password1', 'new_password2')
 
+
 class SaveCategory(forms.ModelForm):
     name = forms.CharField(max_length="250")
     description = forms.Textarea()

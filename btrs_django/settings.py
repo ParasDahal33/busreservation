@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.humanize',
+     'django_celery_beat',
     'reservationApp.apps.ReservationAppConfig'
    
 ]
@@ -139,3 +140,4 @@ LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/login'
 
 ID_ENCRYPTION_KEY = b'UdhnfelTxqj3q6BbPe7H86sfQnboSBzb0irm2atoFUw='
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

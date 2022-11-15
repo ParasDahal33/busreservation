@@ -13,7 +13,9 @@ from reservationApp.models import Booking, Category, Location, Bus, Schedule
 from cryptography.fernet import Fernet
 from django.conf import settings
 import base64
-from datetime import datetime
+import datetime
+from celery import shared_task
+import pytz
 from django.db.models import Q
 
 context = {
@@ -100,6 +102,8 @@ def update_profile(request):
             context['form'] = form
 
     return render(request, 'manage_profile.html', context)
+
+
 
 
 @login_required
@@ -340,6 +344,25 @@ def delete_booking(request):
         resp['msg'] = 'booking has failed to delete'
 
     return HttpResponse(json.dumps(resp), content_type="application/json")
+
+@shared_task
+def automaticallyDelete(self):
+    resp = {'status': 'failed', 'msg': ''}
+    booking_list = Booking.objects.all()
+    for book in booking_list:
+        utc=pytz.UTC
+        date_created = book.date_created
+        expiry_date = date_created + datetime.timedelta(days=1)
+        current_date = utc.localize(datetime.datetime.now())
+        if expiry_date < current_date:
+            book.delete()
+
+    messages.success(
+        self, f'[<b></b>] Booking has been deleted successfully')
+    resp['status'] = 'success'            
+    return HttpResponse(json.dumps(resp), content_type="application/json")
+        
+    
 
 
 @login_required
