@@ -59,7 +59,7 @@ def home(request):
     context['buses'] = Bus.objects.count()
     context['categories'] = Category.objects.count()
     context['upcoming_trip'] = Schedule.objects.filter(
-        status=1, schedule__gt=datetime.today()).count()
+        status=1).count()
     return render(request, 'home.html', context)
 
 
@@ -209,14 +209,14 @@ def scheduled_trips(request):
     if not request.method == 'POST':
         context['page_title'] = "Scheduled Trips"
         schedules = Schedule.objects.filter(
-            status=1, schedule__gt=datetime.now()).all()
+            status=1, schedule__gt=datetime.datetime.now()).all()
         context['schedules'] = schedules
         context['is_searched'] = False
         context['data'] = {}
     else:
         context['page_title'] = "Search Result | Scheduled Trips"
         context['is_searched'] = True
-        date = datetime.strptime(request.POST['date'], "%Y-%m-%d").date()
+        date = datetime.datetime.strptime(request.POST['date'], "%Y-%m-%d").date()
         year = date.strftime('%Y')
         month = date.strftime('%m')
         day = date.strftime('%d')
@@ -369,6 +369,6 @@ def automaticallyDelete(self):
 def find_trip(request):
     context['page_title'] = 'Find Trip Schedule'
     context['locations'] = Location.objects.filter(status=1).all
-    today = datetime.today().strftime("%Y-%m-%d")
+    today = datetime.datetime.now().strftime("%Y-%m-%d")
     context['today'] = today
     return render(request, 'find_trip.html', context)
