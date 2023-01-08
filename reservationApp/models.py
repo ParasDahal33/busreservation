@@ -95,4 +95,7 @@ class Booking(models.Model):
 
     def total_payable(self):
         return self.seats * self.schedule.fare
+
+    def bus_information(self):
+        return self.schedule
     

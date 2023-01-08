@@ -30,7 +30,7 @@ admin.site.register(Schedule, ScheduleAdminView)
 
 
 class BookingAdminView(admin.ModelAdmin):
-    list_display = ('code', 'name', 'schedule', 'seats', 'status',
+    list_display = ('code', 'name','bus_information', 'seats', 'status',
                     'date_created', 'date_updated', 'total_payable')
     list_per_page = 25
 admin.site.register(Booking, BookingAdminView)
