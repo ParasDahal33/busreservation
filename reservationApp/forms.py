@@ -1,3 +1,4 @@
+import random
 import sched
 from unicodedata import category
 from django import forms
@@ -234,7 +235,7 @@ class SaveBooking(forms.ModelForm):
                 code= ''
         else:
             code= ''
-        pref = datetime.today().strftime('%Y%m%d')
+        pref = str(random.randint(1000,9999))
         code = str(1).zfill(4)
         while True:
             sched = Booking.objects.filter(code=str(pref + code)).count()
